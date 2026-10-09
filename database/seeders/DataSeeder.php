@@ -11,7 +11,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
-class DatabaseSeeder extends Seeder
+class DataSeeder extends Seeder
 {
     public function run(): void
     {

@@ -1,6 +1,6 @@
 # Workshop Registration Management System
 
-A Laravel application for managing workshops, attendee registrations, user roles, and registration history.
+A Laravel application for managing workshops, attendee registrations, user roles, waitlists, and registration history.
 
 ## Requirements
 
@@ -11,25 +11,23 @@ A Laravel application for managing workshops, attendee registrations, user roles
 
 ## Installation
 
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone <repository-url>
 cd WorkshopRegistrationService
 ```
 
-Replace `<repository-url>` with the actual Git repository URL.
-
-### 2. Install Dependencies
+### 2. Install dependencies
 
 ```bash
 composer install
 npm install
 ```
 
-### 3. Configure Environment
+### 3. Configure the environment
 
-Copy the example environment file:
+On Windows:
 
 ```cmd
 copy .env.example .env
@@ -41,7 +39,7 @@ Generate the application key:
 php artisan key:generate
 ```
 
-Update the database configuration in `.env`:
+Configure your database in `.env`:
 
 ```env
 DB_CONNECTION=mysql
@@ -52,49 +50,64 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Create the `workshop_registration` database in MySQL before continuing. Update the credentials if necessary.
+Create the database in MySQL before proceeding.
 
-### 4. Run Database Migrations
+### 4. Run migrations
 
 ```bash
 php artisan migrate
 ```
 
-### 5. Run Seeders
+### 5. Run seeders
 
-Run the following seeders **in the specified order** after completing the migrations.
-
-First, seed roles and permissions:
+Execute the seeders in this order:
 
 ```bash
 php artisan db:seed --class="Database\Seeders\RolesAndPermissionsSeeder"
-```
-
-Next, seed the initial application data:
-
-```bash
 php artisan db:seed --class="Database\Seeders\DataSeeder"
 ```
 
-### 6. Build Frontend Assets
+### 6. Build frontend assets
 
 ```bash
 npm run build
 ```
 
-### 7. Start the Application
+### 7. Start the application
 
 ```bash
 php artisan serve
 ```
 
-Open the application at:
+Open the welcome page:
 
 http://127.0.0.1:8000
 
+Open the administration and login page:
+
+http://127.0.0.1:8000/admin/login
+
+## Sample Login Credentials
+
+The following accounts are created by the sample data seeder.
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@example.com` | `Password123!` |
+| Manager | `manager@example.com` | `Password123!` |
+| Staff | `staff@example.com` | `Password123!` |
+
+All three roles use the same login URL:
+
+http://127.0.0.1:8000/admin/login
+
+Access to application features depends on the user's assigned role and permissions.
+
+**Security:** These are development-only credentials. Change or remove them before deploying the application to production.
+
 ## Fresh Database Setup
 
-To reset the local database and rebuild it from scratch:
+To rebuild a local development database from scratch:
 
 ```bash
 php artisan migrate:fresh
@@ -102,31 +115,34 @@ php artisan db:seed --class="Database\Seeders\RolesAndPermissionsSeeder"
 php artisan db:seed --class="Database\Seeders\DataSeeder"
 ```
 
-**Warning:** `migrate:fresh` deletes all existing database tables and their data. Use it only when you intend to reset the database.
+**Warning:** `migrate:fresh` deletes all existing database tables and data.
 
 ## Troubleshooting
 
-### Clear Laravel Caches
+Clear Laravel caches:
 
 ```bash
 php artisan optimize:clear
 ```
 
-### Refresh Composer Autoloading
+Refresh Composer autoloading:
 
 ```bash
 composer dump-autoload
 ```
 
-### Check Migration Status
+Check migration status:
 
 ```bash
 php artisan migrate:status
 ```
 
-## Important Notes
+## Implementation Notes
 
-- Run migrations before executing the seeders.
-- Always run `RolesAndPermissionsSeeder` before `DataSeeder`.
-- Keep `.env` files and credentials out of version control.
-- Verify the seeders' contents for any default development login credentials.
+- Laravel provides the application framework and database transaction support.
+- Filament simplifies administrative forms, tables, and actions.
+- MySQL stores workshops, registrations, users, and their relationships.
+- Spatie Laravel Permission manages roles and permissions.
+- Database transactions and workshop row-level locking prevent concurrent requests from exceeding capacity when using a database engine that supports the required locking semantics.
+- Cancelled registrations remain in the database for audit history.
+- When an active registration is cancelled, the earliest waitlisted attendee is promoted automatically.
