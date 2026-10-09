@@ -29,7 +29,7 @@ class WorkshopResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->can('view workshops') ?? false;
+        return auth()->user()?->hasAnyRole(['Manager', 'Staff']) ?? false;
     }
 
     public static function canCreate(): bool

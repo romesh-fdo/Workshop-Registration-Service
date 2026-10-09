@@ -32,6 +32,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $manager = Role::findOrCreate('Manager', 'web');
         $staff = Role::findOrCreate('Staff', 'web');
 
+        // Admin manages users but only views workshops and registrations.
         $admin->syncPermissions([
             'manage staff',
             'view workshops',
@@ -39,6 +40,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view registration history',
         ]);
 
+        // Manager manages workshops and registrations.
         $manager->syncPermissions([
             'view workshops',
             'manage workshops',
@@ -48,6 +50,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view registration history',
         ]);
 
+        // Staff manages registrations but cannot manage workshops.
         $staff->syncPermissions([
             'view workshops',
             'view registrations',
