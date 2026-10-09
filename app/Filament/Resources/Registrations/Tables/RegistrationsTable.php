@@ -41,6 +41,7 @@ class RegistrationsTable
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'active' => 'success',
+                        'waitlisted' => 'warning',
                         'cancelled' => 'danger',
                         default => 'gray',
                     })
@@ -49,6 +50,12 @@ class RegistrationsTable
                 TextColumn::make('registered_at')
                     ->label('Registered At')
                     ->dateTime('d M Y, H:i')
+                    ->sortable(),
+
+                TextColumn::make('activated_at')
+                    ->label('Promoted At')
+                    ->dateTime('d M Y, H:i')
+                    ->placeholder('—')
                     ->sortable(),
 
                 TextColumn::make('cancelled_at')
@@ -61,6 +68,7 @@ class RegistrationsTable
                 SelectFilter::make('status')
                     ->options([
                         'active' => 'Active',
+                        'waitlisted' => 'Waitlisted',
                         'cancelled' => 'Cancelled',
                     ]),
             ])
@@ -70,7 +78,7 @@ class RegistrationsTable
                 EditAction::make()
                     ->visible(
                         fn (Registration $record): bool =>
-                            $record->status === 'active'
+                            $record->status !== 'cancelled'
                     ),
 
                 Action::make('history')
@@ -78,23 +86,63 @@ class RegistrationsTable
                     ->icon('heroicon-o-clock')
                     ->color('gray')
                     ->modalHeading('Registration History')
-                    ->modalWidth('lg')
+                    ->modalWidth('2xl')
                     ->modalSubmitAction(false)
                     ->modalCancelActionLabel('Close')
                     ->infolist([
                         Section::make('Activity')
+                            ->columns(2)
                             ->schema([
+                                TextEntry::make('status')
+                                    ->badge()
+                                    ->color(fn (string $state): string =>
+                                        match ($state) {
+                                            'active' => 'success',
+                                            'waitlisted' => 'warning',
+                                            'cancelled' => 'danger',
+                                            default => 'gray',
+                                        }
+                                    ),
+
                                 TextEntry::make('registered_at')
                                     ->label('Registered At')
-                                    ->dateTime('d M Y, H:i'),
+                                    ->dateTime('d M Y, H:i:s'),
 
                                 TextEntry::make('registeredBy.name')
                                     ->label('Registered By')
-                                    ->placeholder('Unknown user'),
+                                    ->placeholder('Unknown user')
+                                    ->columnSpanFull(),
+
+                                TextEntry::make('activated_at')
+                                    ->label('Promoted At')
+                                    ->dateTime('d M Y, H:i:s')
+                                    ->placeholder('Not promoted')
+                                    ->visible(
+                                        fn (Registration $record): bool =>
+                                            $record->activated_at !== null
+                                    ),
+
+                                TextEntry::make('activatedBy.name')
+                                    ->label('Promoted By')
+                                    ->placeholder('Unknown user')
+                                    ->helperText(
+                                        fn (Registration $record): string =>
+                                            'This attendee was promoted because '
+                                            . 'a cancellation was processed by '
+                                            . (
+                                                $record->activatedBy?->name
+                                                ?? 'an unknown user'
+                                            )
+                                            . '.'
+                                    )
+                                    ->visible(
+                                        fn (Registration $record): bool =>
+                                            $record->activated_at !== null
+                                    ),
 
                                 TextEntry::make('cancelled_at')
                                     ->label('Cancelled At')
-                                    ->dateTime('d M Y, H:i')
+                                    ->dateTime('d M Y, H:i:s')
                                     ->placeholder('Not cancelled'),
 
                                 TextEntry::make('cancelledBy.name')
@@ -104,15 +152,14 @@ class RegistrationsTable
                                 TextEntry::make('cancellation_reason')
                                     ->label('Cancellation Reason')
                                     ->placeholder('No reason provided')
-                                    ->visible(fn (Registration $record): bool =>
-                                        $record->status === 'cancelled'
+                                    ->visible(
+                                        fn (Registration $record): bool =>
+                                            $record->status === 'cancelled'
                                     )
                                     ->columnSpanFull(),
-                            ])
-                            ->columns(2),
+                            ]),
                     ]),
-
             ])
-            ->defaultSort('registered_at', 'desc');
+            ->defaultSort('registered_at', 'asc');
     }
 }

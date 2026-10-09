@@ -17,6 +17,8 @@ class Registration extends Model
         'cancelled_by',
         'cancelled_at',
         'cancellation_reason',
+        'activated_at',
+        'activated_by',
     ];
 
     protected function casts(): array
@@ -24,6 +26,7 @@ class Registration extends Model
         return [
             'registered_at' => 'datetime',
             'cancelled_at' => 'datetime',
+            'activated_at' => 'datetime',
         ];
     }
 
@@ -40,5 +43,10 @@ class Registration extends Model
     public function cancelledBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'cancelled_by');
+    }
+
+    public function activatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'activated_by');
     }
 }

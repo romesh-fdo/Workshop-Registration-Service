@@ -6,23 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('registrations', function (Blueprint $table) {
-            //
+            $table->timestamp('activated_at')->nullable();
+            $table->foreignId('activated_by')
+                ->nullable()
+                ->constrained('users')
+                ->restrictOnDelete();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('registrations', function (Blueprint $table) {
-            //
+            $table->dropConstrainedForeignId('activated_by');
+            $table->dropColumn('activated_at');
         });
     }
 };
