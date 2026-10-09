@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Redirect all requests to the public/ folder
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Deny access to sensitive files if rewrite is unavailable
+<IfModule !mod_rewrite.c>
+    Options -Indexes
+    DirectoryIndex public/index.php
+
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+</IfModule>
