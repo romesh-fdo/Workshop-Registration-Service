@@ -1,58 +1,132 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Workshop Registration Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel application for managing workshops, attendee registrations, user roles, and registration history.
 
-## About Laravel
+## Requirements
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP
+- Composer
+- MySQL
+- Node.js and npm
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 1. Clone the Repository
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repository-url>
+cd WorkshopRegistrationService
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Replace `<repository-url>` with the actual Git repository URL.
 
-## Contributing
+### 2. Install Dependencies
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+composer install
+npm install
+```
 
-## Code of Conduct
+### 3. Configure Environment
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Copy the example environment file:
 
-## Security Vulnerabilities
+```cmd
+copy .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Generate the application key:
 
-## License
+```bash
+php artisan key:generate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Update the database configuration in `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=workshop_registration
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Create the `workshop_registration` database in MySQL before continuing. Update the credentials if necessary.
+
+### 4. Run Database Migrations
+
+```bash
+php artisan migrate
+```
+
+### 5. Run Seeders
+
+Run the following seeders **in the specified order** after completing the migrations.
+
+First, seed roles and permissions:
+
+```bash
+php artisan db:seed --class="Database\Seeders\RolesAndPermissionsSeeder"
+```
+
+Next, seed the initial application data:
+
+```bash
+php artisan db:seed --class="Database\Seeders\DataSeeder"
+```
+
+### 6. Build Frontend Assets
+
+```bash
+npm run build
+```
+
+### 7. Start the Application
+
+```bash
+php artisan serve
+```
+
+Open the application at:
+
+http://127.0.0.1:8000
+
+## Fresh Database Setup
+
+To reset the local database and rebuild it from scratch:
+
+```bash
+php artisan migrate:fresh
+php artisan db:seed --class="Database\Seeders\RolesAndPermissionsSeeder"
+php artisan db:seed --class="Database\Seeders\DataSeeder"
+```
+
+**Warning:** `migrate:fresh` deletes all existing database tables and their data. Use it only when you intend to reset the database.
+
+## Troubleshooting
+
+### Clear Laravel Caches
+
+```bash
+php artisan optimize:clear
+```
+
+### Refresh Composer Autoloading
+
+```bash
+composer dump-autoload
+```
+
+### Check Migration Status
+
+```bash
+php artisan migrate:status
+```
+
+## Important Notes
+
+- Run migrations before executing the seeders.
+- Always run `RolesAndPermissionsSeeder` before `DataSeeder`.
+- Keep `.env` files and credentials out of version control.
+- Verify the seeders' contents for any default development login credentials.
