@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Workshops\Tables;
 
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -54,7 +55,12 @@ class WorkshopsTable
                     ]),
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make(),
+
+                EditAction::make()
+                    ->visible(
+                        fn (): bool => auth()->user()?->can('manage workshops') ?? false
+                    ),
             ]);
     }
 }

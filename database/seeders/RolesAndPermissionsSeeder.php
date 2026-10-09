@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
-use App\Models\User;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -32,7 +32,12 @@ class RolesAndPermissionsSeeder extends Seeder
         $manager = Role::findOrCreate('Manager', 'web');
         $staff = Role::findOrCreate('Staff', 'web');
 
-        $admin->syncPermissions(Permission::query()->where('guard_name', 'web')->get());
+        $admin->syncPermissions([
+            'manage staff',
+            'view workshops',
+            'view registrations',
+            'view registration history',
+        ]);
 
         $manager->syncPermissions([
             'view workshops',
@@ -51,10 +56,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'view registration history',
         ]);
 
-        User::query()
-            ->orderBy('id')
-            ->first()
-            ?->assignRole($admin);
+        $adminUser = User::role('Admin')->first();
+
+        if (! $adminUser) {
+            $adminUser = User::query()->orderBy('id')->first();
+
+            $adminUser?->assignRole($admin);
+        }
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }

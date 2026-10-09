@@ -20,11 +20,40 @@ class WorkshopResource extends Resource
 {
     protected static ?string $model = Workshop::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
-
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static string|BackedEnum|null $navigationIcon =
+        Heroicon::OutlinedRectangleStack;
 
     protected static ?string $navigationLabel = 'Workshops';
+
+    protected static ?string $recordTitleAttribute = 'title';
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('view workshops') ?? false;
+    }
+
+    public static function canCreate(): bool
+    {
+        $user = auth()->user();
+
+        return $user !== null
+            && $user->hasRole('Manager')
+            && ! $user->hasRole('Admin');
+    }
+
+    public static function canEdit($record): bool
+    {
+        $user = auth()->user();
+
+        return $user !== null
+            && $user->hasRole('Manager')
+            && ! $user->hasRole('Admin');
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -38,9 +67,7 @@ class WorkshopResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
